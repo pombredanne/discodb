@@ -353,7 +353,7 @@ char *ddb_cons_finalize(struct ddb_cons *cons, uint64_t *length, uint64_t flags)
 {
     struct ddb_packed *pack = NULL;
     struct ddb_entry *order = NULL;
-    char *buf;
+    char *buf = NULL;
     int disable_compression, err = 1;
     DDB_TIMER_DEF
 
@@ -403,7 +403,8 @@ char *ddb_cons_finalize(struct ddb_cons *cons, uint64_t *length, uint64_t flags)
     buffer_shrink(pack);
     err = 0;
 err:
-    buf = pack->buffer;
+    if (pack)
+        buf = pack->buffer;
     free(order);
     free(pack);
     if (err){
@@ -444,7 +445,7 @@ void ddb_cons_free(struct ddb_cons *cons)
         return;
 
     while (ddb_map_next_item_str(c, &key, &ptr))
-        free((void*)*ptr);
+        ddb_deltalist_free((struct ddb_deltalist*)*ptr);
 
     ddb_map_cursor_free(c);
     ddb_map_free(cons->keys_map);
