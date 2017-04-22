@@ -1,4 +1,3 @@
-import glob
 from distutils.core import setup, Extension
 
 discodb_module = Extension('discodb._discodb',
@@ -6,8 +5,9 @@ discodb_module = Extension('discodb._discodb',
                            libraries=['discodb'])
 
 setup(name='discodb',
-      version='0.5',
+      version='0.6',
       description='An efficient, immutable, persistent mapping object.',
       author='Nokia Research Center',
       ext_modules=[discodb_module],
       packages=['discodb'])
+

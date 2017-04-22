@@ -1,6 +1,6 @@
 Name: libdiscodb
 Version: 0.3.1
-Release: 1%{?dist}.db
+Release: 3%{?dist}.db
 Summary: c library and headers for discodb
 
 Group:	 bauman
@@ -102,6 +102,7 @@ install -m 644 -p $RPM_BUILD_DIR/discodb.h $RPM_BUILD_ROOT/%{_includedir}/discod
 
 mkdir -p $RPM_BUILD_ROOT/%{_docdir}/%{name}
 install -m 644 -p $RPM_BUILD_DIR/DISCODB_LICENSING.txt $RPM_BUILD_ROOT/%{_docdir}/%{name}/LICENSING.txt
+install -m 644 -p $RPM_BUILD_DIR/ddb_hash.h $RPM_BUILD_ROOT/%{_docdir}/%{name}/ddb_hash.LGPL-COMPLIANCE.h
 
 %clean
 rm -rf %{buildroot}
@@ -112,6 +113,7 @@ rm -rf %{buildroot}
 %{_usr}/%{_lib}/libdiscodb.so
 %doc
 %{_docdir}/%{name}/LICENSING.txt
+%{_docdir}/%{name}/ddb_hash.LGPL-COMPLIANCE.h
 %files devel
 %{_includedir}/*.h
 

@@ -1,10 +1,11 @@
 __author__ = 'dan'
+BIG_VAL = 20000
 import discodb
 from time import sleep
 a = discodb.DiscoDBConstructor()
 a.add("k","v")
 a.add("db1","a value")
-for x in xrange(200000):
+for x in xrange(BIG_VAL):
     a.add("special", str(x))
 o = a.finalize(unique_items=True)
 print "DB1 Keys and Values"
@@ -25,7 +26,7 @@ c.add("k","2")
 c.add("k","3")
 c.add("db2","another value")
 c.add("k","2")
-for x in xrange(200000):
+for x in xrange(BIG_VAL):
     c.add("special", str(x))
 c.merge(b, False)
 oo = c.finalize(unique_items=True)
@@ -40,8 +41,8 @@ with open("/tmp/qfd2", 'rb') as f:
     e = discodb.DiscoDB.load(f)
 
 
-#d.merge_with_explicit_value(e, "new_value_for_all_keys") #one of these must be commented
-d.merge(e, False) #one of these must be commented
+d.merge_with_explicit_value(e, "new_value_for_all_keys") #one of these must be commented
+#d.merge(e, False) #one of these must be commented
 
 oo2 = d.finalize(unique_items=True)
 print "testing the final merge"
@@ -57,5 +58,3 @@ print "key/values after reload "
 for k in oofinal.keys():
     for v in oofinal.query(discodb.Q.parse(k)):
         print k, "/", v
-
-sleep(300)

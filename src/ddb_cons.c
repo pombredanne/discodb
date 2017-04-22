@@ -492,7 +492,40 @@ void ddb_cons_free(struct ddb_cons *cons)
     free(cons);
 }
 
+int ddb_cons_merge(struct ddb_cons *outdb,
+                   struct ddb *indb,
+                 const struct ddb_entry *explicit_value)
+{
+    int result = 0;
+    int errcode = 0;
+    const struct ddb_entry *kentry = NULL;
+    const struct ddb_entry *ventry = NULL;
+    struct ddb_cursor *key_cursor = NULL;
+    struct ddb_cursor *value_cursor = NULL;
 
+    key_cursor = ddb_keys(indb);
+    while ((kentry = ddb_next(key_cursor, &errcode))){
+        if (explicit_value){
+            ddb_cons_add(outdb, kentry, explicit_value);
+        } else {
+            value_cursor = ddb_getitem(indb, kentry);
+            while ((ventry = ddb_next(value_cursor, &errcode))) {
+                ddb_cons_add(outdb, kentry, ventry);
+            }
+            if (value_cursor != NULL) {
+                ddb_free_cursor(value_cursor);
+                value_cursor = NULL;
+            }
+        }
+    }
+    if (key_cursor != NULL) {
+        ddb_free_cursor(key_cursor);
+    }
+    if (value_cursor != NULL){
+        ddb_free_cursor(value_cursor);
+    }
+    return result;
+}
 int ddb_cons_add(struct ddb_cons *db,
             const struct ddb_entry *key,
             const struct ddb_entry *value)

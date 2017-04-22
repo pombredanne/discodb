@@ -644,56 +644,19 @@ DiscoDBConstructor_dealloc(DiscoDBConstructor *self)
 static PyObject *
 DiscoDBConstructor_merge(DiscoDBConstructor *self, PyObject *item)
 {
-    int errcode;
-    const struct ddb_entry *kentry;
-    const struct ddb_entry *ventry;
-    struct ddb_cursor *key_cursor = NULL;
-    struct ddb_cursor *value_cursor = NULL;
-
     PyObject *data = NULL;
     DiscoDB *ddb = NULL;
-    if (!PyArg_ParseTuple(item, "O!O", &DiscoDBType, &ddb, &data))
-        goto Done;
-    key_cursor = ddb_keys(ddb->discodb);
-    while ((kentry = ddb_next(key_cursor, &errcode))){
-        value_cursor = ddb_getitem(ddb->discodb, kentry);
-        while ((ventry = ddb_next(value_cursor, &errcode))){
-            ddb_cons_add(self->ddb_cons, kentry, ventry);
-        }
-        if (value_cursor != NULL){
-            ddb_cursor_dealloc(value_cursor);
-            value_cursor = NULL;
-        }
-    }
-    Done:
-        if (key_cursor != NULL)
-            ddb_cursor_dealloc(key_cursor);
-        if (value_cursor != NULL)
-            ddb_cursor_dealloc(value_cursor);
-        if (PyErr_Occurred())
-          return NULL;
-
+    if (PyArg_ParseTuple(item, "O!O", &DiscoDBType, &ddb, &data))
+        ddb_cons_merge(self->ddb_cons, ddb->discodb, NULL);
     Py_RETURN_NONE;
 }
 static PyObject *
 DiscoDBConstructor_merge_with_explicit_value(DiscoDBConstructor *self, PyObject *item)
 {
-    int errcode;
-    const struct ddb_entry *kentry;
-    struct ddb_cursor *key_cursor = NULL;
     DiscoDB *ddb = NULL;
     struct ddb_entry explicit_ventry;
-    if (!PyArg_ParseTuple(item, "O!s#", &DiscoDBType, &ddb, &explicit_ventry.data, &explicit_ventry.length))
-        goto Done;
-    key_cursor = ddb_keys(ddb->discodb);
-    while ((kentry = ddb_next(key_cursor, &errcode))) {
-        ddb_cons_add(self->ddb_cons, kentry, &explicit_ventry);
-    }
-    Done:
-        if (key_cursor != NULL)
-            ddb_cursor_dealloc(key_cursor);
-        if (PyErr_Occurred())
-          return NULL;
+    if (PyArg_ParseTuple(item, "O!s#", &DiscoDBType, &ddb, &explicit_ventry.data, &explicit_ventry.length))
+        ddb_cons_merge(self->ddb_cons, ddb->discodb, &explicit_ventry);
     Py_RETURN_NONE;
 }
 static PyObject *
